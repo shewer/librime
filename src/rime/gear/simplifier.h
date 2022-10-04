@@ -23,7 +23,7 @@ class Opencc {
   bool ConvertWord(const string& text, vector<string>* forms);
   bool RandomConvertText(const string& text, string* simplified);
   bool ConvertText(const string& text, string* simplified);
-}
+};
 
 class Simplifier : public Filter, TagMatching {
  public:
