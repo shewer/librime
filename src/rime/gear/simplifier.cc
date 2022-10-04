@@ -18,7 +18,6 @@
 #include <rime/service.h>
 #include <rime/translation.h>
 #include <rime/gear/simplifier.h>
-#include <opencc/Config.hpp> // Place OpenCC #includes here to avoid VS2015 compilation errors
 #include <opencc/Converter.hpp>
 #include <opencc/Conversion.hpp>
 #include <opencc/ConversionChain.hpp>
@@ -30,16 +29,7 @@ static const char* quote_right = "\xe3\x80\x95";  //"\xef\xbc\x89";
 
 namespace rime {
 
-class Opencc {
- private:
-   opencc::ConverterPtr converter_;
-   opencc::DictPtr dict_;
- public:
-  Opencc(const string& config_path);
-  bool ConvertWord(const string& text, vector<string>* forms);
-  bool RandomConvertText(const string& text, string* simplified);
-  bool ConvertText(const string& text, string* simplified);
-}
+
  
 Opencc::Opencc(const string& config_path) {
   LOG(INFO) << "initializing opencc: " << config_path;
