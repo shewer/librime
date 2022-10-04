@@ -10,10 +10,20 @@
 #include <rime/filter.h>
 #include <rime/algo/algebra.h>
 #include <rime/gear/filter_commons.h>
+#include <opencc/Common.hpp>
 
 namespace rime {
 
-class Opencc;
+class Opencc {
+ private:
+   opencc::ConverterPtr converter_;
+   opencc::DictPtr dict_;
+ public:
+  Opencc(const string& config_path);
+  bool ConvertWord(const string& text, vector<string>* forms);
+  bool RandomConvertText(const string& text, string* simplified);
+  bool ConvertText(const string& text, string* simplified);
+}
 
 class Simplifier : public Filter, TagMatching {
  public:
