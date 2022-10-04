@@ -10,6 +10,7 @@
 #include <rime/filter.h>
 #include <rime/algo/algebra.h>
 #include <rime/gear/filter_commons.h>
+#include <opencc/Config.hpp> // Place OpenCC #includes here to avoid VS2015 compilation errors
 #include <opencc/Common.hpp>
 
 namespace rime {
