@@ -31,67 +31,72 @@ static const char* quote_right = "\xe3\x80\x95";  //"\xef\xbc\x89";
 namespace rime {
 
 class Opencc {
- public:
-  Opencc(const string& config_path) {
-    LOG(INFO) << "initializing opencc: " << config_path;
-    opencc::Config config;
-    try {
-      converter_ = config.NewFromFile(config_path);
-      const list<opencc::ConversionPtr> conversions =
-        converter_->GetConversionChain()->GetConversions();
-      dict_ = conversions.front()->GetDict();
-    }
-    catch (...) {
-      LOG(ERROR) << "opencc config not found: " << config_path;
-    }
-  }
-
-  bool ConvertWord(const string& text, vector<string>* forms) {
-    if (dict_ == nullptr) return false;
-    opencc::Optional<const opencc::DictEntry*> item = dict_->Match(text);
-    if (item.IsNull()) {
-      // Match not found
-      return false;
-    } else {
-      const opencc::DictEntry* entry = item.Get();
-      for (auto&& value : entry->Values()) {
-        forms->push_back(std::move(value));
-      }
-      return forms->size() > 0;
-    }
-  }
-
-  bool RandomConvertText(const string& text, string* simplified) {
-    if (dict_ == nullptr) return false;
-    const char *phrase = text.c_str();
-    std::ostringstream buffer;
-    for (const char* pstr = phrase; *pstr != '\0';) {
-      opencc::Optional<const opencc::DictEntry*> matched = dict_->MatchPrefix(pstr);
-      size_t matchedLength;
-      if (matched.IsNull()) {
-        matchedLength = opencc::UTF8Util::NextCharLength(pstr);
-        buffer << opencc::UTF8Util::FromSubstr(pstr, matchedLength);
-      } else {
-        matchedLength = matched.Get()->KeyLength();
-        size_t i = rand() % (matched.Get()->NumValues());
-        buffer << matched.Get()->Values().at(i);
-      }
-      pstr += matchedLength;
-    }
-    *simplified = buffer.str();
-    return *simplified != text;
-  }
-
-  bool ConvertText(const string& text, string* simplified) {
-    if (converter_ == nullptr) return false;
-    *simplified = converter_->Convert(text);
-    return *simplified != text;
-  }
-
  private:
    opencc::ConverterPtr converter_;
    opencc::DictPtr dict_;
-};
+ public:
+  Opencc(const string& config_path);
+  bool ConvertWord(const string& text, vector<string>* forms);
+  bool RandomConvertText(const string& text, string* simplified);
+  bool ConvertText(const string& text, string* simplified);
+}
+ 
+Opencc::Opencc(const string& config_path) {
+  LOG(INFO) << "initializing opencc: " << config_path;
+  opencc::Config config;
+  try {
+    converter_ = config.NewFromFile(config_path);
+    const list<opencc::ConversionPtr> conversions =
+      converter_->GetConversionChain()->GetConversions();
+    dict_ = conversions.front()->GetDict();
+  }
+  catch (...) {
+    LOG(ERROR) << "opencc config not found: " << config_path;
+  }
+}
+
+bool Opencc::ConvertWord(const string& text, vector<string>* forms) {
+  if (dict_ == nullptr) return false;
+  opencc::Optional<const opencc::DictEntry*> item = dict_->Match(text);
+  if (item.IsNull()) {
+    // Match not found
+    return false;
+  } else {
+    const opencc::DictEntry* entry = item.Get();
+    for (auto&& value : entry->Values()) {
+      forms->push_back(std::move(value));
+    }
+    return forms->size() > 0;
+  }
+}
+
+bool Opencc::RandomConvertText(const string& text, string* simplified) {
+  if (dict_ == nullptr) return false;
+  const char *phrase = text.c_str();
+  std::ostringstream buffer;
+  for (const char* pstr = phrase; *pstr != '\0';) {
+    opencc::Optional<const opencc::DictEntry*> matched = dict_->MatchPrefix(pstr);
+    size_t matchedLength;
+    if (matched.IsNull()) {
+      matchedLength = opencc::UTF8Util::NextCharLength(pstr);
+      buffer << opencc::UTF8Util::FromSubstr(pstr, matchedLength);
+    } else {
+      matchedLength = matched.Get()->KeyLength();
+      size_t i = rand() % (matched.Get()->NumValues());
+      buffer << matched.Get()->Values().at(i);
+    }
+    pstr += matchedLength;
+  }
+  *simplified = buffer.str();
+  return *simplified != text;
+}
+
+bool Opencc::ConvertText(const string& text, string* simplified) {
+  if (converter_ == nullptr) return false;
+  *simplified = converter_->Convert(text);
+  return *simplified != text;
+}
+
 
 // Simplifier
 
