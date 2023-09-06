@@ -120,6 +120,11 @@ jobs:
         shell: msys2 {0}
 
     steps:
+      - name: Checkout last commit
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+      
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
 
