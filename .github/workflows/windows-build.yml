@@ -140,7 +140,10 @@ jobs:
 
       - name: Install Rime plugins
         run: |
-          pwd; ls ; ./action-install-plugins-macos.sh
+          pwd
+          ls 
+          find ../..
+          ../action-install-plugins-macos.sh
 
       - name: Build with mingw-w64
         run: |
