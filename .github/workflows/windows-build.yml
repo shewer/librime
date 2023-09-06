@@ -139,7 +139,10 @@ jobs:
             mingw-w64-x86_64-opencc
 
       - name: Install Rime plugins
-        run: ./action-install-plugins-macos.sh
+        run: |
+          - pwd
+          - ls
+          - ./action-install-plugins-macos.sh
 
       - name: Build with mingw-w64
         run: |
